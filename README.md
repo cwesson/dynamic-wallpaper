@@ -76,12 +76,13 @@ $ dwall
 Dwall V2.0   : Set wallpapers according to current time.
 Developed By : Aditya Shakya (@adi1090x)
 
-Usage : test.sh [-h] [-p] [-s style]
+Usage : test.sh [-h] [-p] [-s style] [-c]
 
 Options:
    -h	  Show this help message
    -p	  Use pywal to set wallpaper
    -s	  Name of the style to apply
+   -c	  Use cached style
    
 Available styles:  aurora  beach  bitday  chihuahuan  cliffs  colony  desert  earth  exodus
 factory  firewatch  forest  gradient  home  island  lake  lakeside  market  mojave  moon
@@ -134,22 +135,14 @@ $ export EDITOR=vim
 $ crontab -e
 
 # Add this line replacing the values of env variable and style with yours
-0 * * * * env PATH=/usr/local/bin:/usr/bin DISPLAY=:0 DESKTOP_SESSION=Openbox DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus" /usr/bin/dwall -s firewatch
+0 * * * * env PATH=/usr/local/bin:/usr/bin DISPLAY=:0 DESKTOP_SESSION=Openbox DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus" /usr/bin/dwall -c
 
 # check if job is created on your crontab
 $ crontab -l
-0 * * * * env PATH=/usr/local/bin:/usr/bin DISPLAY=:0 DESKTOP_SESSION=Openbox DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus" /usr/bin/dwall -s firewatch
+0 * * * * env PATH=/usr/local/bin:/usr/bin DISPLAY=:0 DESKTOP_SESSION=Openbox DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus" /usr/bin/dwall -c
 ```
 
-- That's it, **dwall** added to your crontab and will change the wallpaper every hour. If you want to change the wallpaper style, just remove previous job and add new with another style.
-```bash
-# delete previous job
-$ crontab -r
-
-# Add new job with different style
-$ crontab -e
-0 * * * * env PATH=/usr/local/bin:/usr/bin DISPLAY=:0 DESKTOP_SESSION=Openbox DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus" /usr/bin/dwall -s bitday
-```
+- That's it, **dwall** added to your crontab and will change the wallpaper every hour. If you want to change the wallpaper style, just remove run `dwall -s` again.
 
 ### How to add own wallpapers
 

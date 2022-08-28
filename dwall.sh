@@ -17,6 +17,7 @@ MAGENTABG="$(printf '\033[45m')"  CYANBG="$(printf '\033[46m')"  WHITEBG="$(prin
 ## Wallpaper directory
 DIR="/usr/share/dynamic-wallpaper/images"
 HOUR=`date +%k`
+cfile="$HOME/.cache/dwall_current"
 
 ## Wordsplit in ZSH
 set -o shwordsplit 2>/dev/null
@@ -64,12 +65,13 @@ usage() {
 		Dwall V2.0   : Set wallpapers according to current time.
 		Developed By : Aditya Shakya (@adi1090x)
 			
-		Usage : `basename $0` [-h] [-p] [-s style]
+		Usage : `basename $0` [-h] [-p] [-s style] [-c]
 
 		Options:
 		   -h	Show this help message
 		   -p	Use pywal to set wallpaper
 		   -s	Name of the style to apply
+		   -c	Use cached style
 		   
 	EOF
 
@@ -148,6 +150,14 @@ get_img() {
 		echo -e ${RED}"[!] Invalid image file, Exiting..."
 		{ reset_color; exit 1; }
 	fi
+
+	# make/update dwall cache file
+	if [[ ! -f "$cfile" ]]; then
+		touch "$cfile"
+		echo "$image.$FORMAT" > "$cfile"
+	else
+		echo "$image.$FORMAT" > "$cfile"
+	fi
 }
 
 ## Set wallpaper with pywal
@@ -163,20 +173,11 @@ pywal_set() {
 
 ## Wallpaper Setter
 set_wallpaper() {
-	cfile="$HOME/.cache/dwall_current"
 	get_img "$1"
 
 	# set wallpaper with setter
 	if [[ -n "$FORMAT" ]]; then
 		$SETTER "$image.$FORMAT"
-	fi
-
-	# make/update dwall cache file
-	if [[ ! -f "$cfile" ]]; then
-		touch "$cfile"
-		echo "$image.$FORMAT" > "$cfile"
-	else
-		echo "$image.$FORMAT" > "$cfile"	
 	fi
 }
 
@@ -212,13 +213,16 @@ main() {
 }
 
 ## Get Options
-while getopts ":s:hp" opt; do
+while getopts ":s:hpc" opt; do
 	case ${opt} in
 		p)
 			PYWAL=true
 			;;
 		s)
 			STYLE=$OPTARG
+			;;
+		c)
+			CACHE=true
 			;;
 		h)
 			{ usage; reset_color; exit 0; }
@@ -236,9 +240,14 @@ done
 
 ## Run
 Prerequisite
+if [[ $CACHE ]]; then
+	if [[ -f "$cfile" ]]; then
+		STYLE=$(dirname `cat "$cfile"` | xargs basename)
+	fi
+fi
 if [[ "$STYLE" ]]; then
 	check_style "$STYLE"
-    main
+	main
 else
 	{ usage; reset_color; exit 1; }
 fi
